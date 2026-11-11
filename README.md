@@ -1,6 +1,20 @@
 # LSF
 
-Directory listing which computes and displays the size of files and subdirectories.
+Directory listing which computes and displays the size of files and subdirectories:
+
+```
+┌─────────────────────────────────── Files: ───────────────────────────────────┐
+│         3.15 KB │ .gitignore                                                 │
+│        62.00  B │ lsf.slnx                                                   │
+│        38.00  B │ publish.ps1                                                │
+│         1.03 KB │ README.md                                                  │
+├──────────────────────────────── Directories: ────────────────────────────────┤
+│        45.19 KB │ .git                                                       │
+│         9.37 KB │ .idea                                                      │
+│        20.10 KB │ .vs                                                        │
+│         6.76 MB │ lsf                                                        │
+└──────────────────────────────────────────────────────────────────────────────┘
+```
 
 ## Usage
 
