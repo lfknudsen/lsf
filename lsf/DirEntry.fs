@@ -89,9 +89,14 @@ type DirEntry =
         override this.ToString() : string =
             let filename = Path.GetFileName(this.path) |> truncateFilename
             let size_string = formatSize 1000 this.size
-            $"| {filename, -42} | {size_string, 15} |"
+            formatEntryN (filename, size_string)
 
     end
 
 let (.+.) (left: DirEntry) (right: DirEntry) =
     DirEntry(left.path, left.size + right.size)
+
+let formatDirEntry (bytesPerKB: double) (entry: DirEntry) : string =
+    let name = entry.path |> formatFilename
+    let size = formatSize bytesPerKB entry.size
+    formatEntryN (name, size)

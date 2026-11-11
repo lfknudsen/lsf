@@ -8,7 +8,9 @@
 
     <ItemGroup>
         <Compile Include="Formatting.fs" />
+        <Compile Include="Sorting.fs" />
         <Compile Include="DirEntry.fs" />
+        <Compile Include="Monad.fs"/>
         <Compile Include="Program.fs"/>
     </ItemGroup>
 
