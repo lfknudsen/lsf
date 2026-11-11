@@ -57,9 +57,6 @@ let PrintHeader (printHeader: bool) (header: string) (files: 'a array): 'a array
         Console.WriteLine header
     files
 
-let fileBanner = "┌─────────────────────────── Files: ───────────────────────────┐"
-let dirBanner = "┌──────────────────────── Directories: ────────────────────────┐"
-
 let WriteFiles (printContinuously: bool) (bytesPerKB: int) (files: string array) =
     if printContinuously then
         Array.iter (WriteFile bytesPerKB) files
@@ -103,29 +100,49 @@ let printDirsM (m: Monad) : Monad =
     m
 
 let printBottom (m: Monad) : Monad =
-    if m.showDirs || m.showFiles then
+    if m.printBanner && (m.showDirs || m.showFiles) then
         Console.WriteLine ("└" + (String.replicate 78 "─" ) + "┘")
     m
+
+let printHelp () =
+    Console.WriteLine "LSF
+Usage:
+    lsf [OPTIONS]
+    
+    Options:
+    -h, --help          Print this message and exit.
+    --1024              Consider a kilobyte to be equal to 1024 bytes, as Microsoft does.
+    -s                  Sort the output by size instead of name.
+    -r                  Reverse the sort order.
+    -c                  Print each entry one at a time, instead of waiting for all computations to finish.
+    -d                  Only show directories. Mutually exclusive with -f.
+    -f                  Only show files. Mutually exclusive with -d.
+    -b                  Refrain from printing the header(s).
+    "
 
 [<EntryPoint>]
 let main (argv: string array) =
     let contains (s: string) = Array.contains s argv
-    let bytesPerKB = if contains "--1024" then 1024 else 1000
-    let ordering: Ordering =
-        match contains "-s", contains "-r" with
-        | true, true -> OrderBy.Size, OrderDirection.Des
-        | true, false -> OrderBy.Size, OrderDirection.Asc
-        | false, true -> OrderBy.Name, OrderDirection.Des
-        | false, false -> OrderBy.Name, OrderDirection.Asc
-    let printContinuously = contains "-c" || ordering <> DefaultOrdering
-    let showDirs = contains "-d" || not (contains "-f")
-    let showFiles = contains "-f" || not (contains "-d")
-    let printHeader = not (contains "-b")
-    let dir = Directory.GetCurrentDirectory()
-    newMonad ordering dir bytesPerKB printContinuously showDirs showFiles printHeader
-    |> printFilesM
-    |> printDirsM
-    |> printBottom
-    |> ignore
+    if contains "-h" || contains "--help" then
+        printHelp ()
+        exit 0
+    else
+        let bytesPerKB = if contains "--1024" then 1024 else 1000
+        let ordering: Ordering =
+            match contains "-s", contains "-r" with
+            | true, true -> OrderBy.Size, OrderDirection.Des
+            | true, false -> OrderBy.Size, OrderDirection.Asc
+            | false, true -> OrderBy.Name, OrderDirection.Des
+            | false, false -> OrderBy.Name, OrderDirection.Asc
+        let printContinuously = contains "-c" || ordering <> DefaultOrdering
+        let showDirs = contains "-d" || not (contains "-f")
+        let showFiles = contains "-f" || not (contains "-d")
+        let printHeader = not (contains "-b")
+        let dir = Directory.GetCurrentDirectory()
+        newMonad ordering dir bytesPerKB printContinuously showDirs showFiles printHeader
+        |> printFilesM
+        |> printDirsM
+        |> printBottom
+        |> ignore
 
     0
